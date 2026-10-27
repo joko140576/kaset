@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3f6fb">
+<title>Kaset Care – PM & CM Kaset</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--line:#e1e8f0;--ink:#0f1f33;--mut:#5d6d80;--pm:#0d9488;--cm:#ea580c;--acc:var(--pm);--r:20px;--sh:0 1px 2px rgba(15,31,51,.05),0 14px 34px -16px rgba(15,31,51,.22)}
+body.cm{--acc:var(--cm)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--ink);font:16px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+ background:radial-gradient(900px 480px at 90% -8%,rgba(13,148,136,.14),transparent 60%),radial-gradient(700px 480px at -8% 55%,rgba(234,88,12,.09),transparent 60%),var(--bg)}
+.wrap{max-width:1080px;margin:0 auto;padding:18px 18px 60px}
+svg.ic{width:1.15em;height:1.15em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+header.top{display:flex;align-items:center;gap:12px;padding:6px 0 20px}
+.logo{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,var(--pm),#0284c7);color:#fff;font-size:1.3rem;box-shadow:0 10px 22px -10px var(--pm)}
+.brand{font-weight:800;letter-spacing:.2px;font-size:1.15rem}.brand small{display:block;font-weight:500;color:var(--mut);font-size:.75rem;letter-spacing:0}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;margin:8px 0 64px}
+.hero h1{font-size:clamp(1.9rem,5vw,3.1rem);line-height:1.1;margin:0 0 12px;letter-spacing:-.5px;background:linear-gradient(120deg,#0f1f33 30%,var(--pm));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--mut);margin:0 0 20px;max-width:46ch}
+.hero img{display:block;width:100%;height:auto;border-radius:26px;border:6px solid #fff;box-shadow:var(--sh)}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:.88rem;color:var(--mut);box-shadow:0 1px 2px rgba(15,31,51,.05)}
+.pill .ic{color:var(--pm)}
+.choose{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;padding-top:8px}
+.opt{all:unset;box-sizing:border-box;cursor:pointer;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;box-shadow:var(--sh);transition:transform .2s,border-color .2s,box-shadow .2s}
+.opt:hover{transform:translateY(-4px)}
+.opt:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.opt img{display:block;width:100%;aspect-ratio:5/3;object-fit:contain;background:#eef3f8}
+.opt .t{padding:16px 18px 18px;display:flex;align-items:center;gap:14px;margin-top:auto;border-top:1px solid var(--line);background:#fff}
+.opt .t .ico{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:1.4rem;color:#fff}
+.opt[data-k=PM] .ico{background:var(--pm)}.opt[data-k=CM] .ico{background:var(--cm)}
+.opt b{display:block;font-size:1.2rem}.opt span.d{color:var(--mut);font-size:.88rem}
+.opt .go{margin-left:auto;color:var(--mut)}
+.opt[data-k=PM]:hover,.opt[data-k=PM].on{border-color:var(--pm);box-shadow:0 22px 44px -22px var(--pm)}
+.opt[data-k=CM]:hover,.opt[data-k=CM].on{border-color:var(--cm);box-shadow:0 22px 44px -22px var(--cm)}
+#panel{display:none;margin-top:32px;scroll-margin-top:12px}
+#panel.show{display:block;animation:in .35s ease}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#panel.show{animation:none}.opt{transition:none}}
+.ph{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.ph h2{margin:0;font-size:1.4rem}.ph .ico{width:44px;height:44px;border-radius:14px;background:var(--acc);display:grid;place-items:center;color:#fff;font-size:1.3rem}
+.back{margin-left:auto;display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer;font:inherit;font-size:.9rem}
+.back:hover{border-color:var(--acc);color:var(--acc)}
+form{background:#fff;border:1px solid var(--line);border-top:4px solid var(--acc);border-radius:var(--r);padding:24px;box-shadow:var(--sh)}
+form[hidden]{display:none}
+.sec{font-weight:700;color:var(--acc);display:flex;align-items:center;gap:8px;margin:24px 0 12px;font-size:.95rem}
+.sec:first-child{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 16px}
+.full{grid-column:1/-1}
+label.f{display:block;font-size:.85rem;font-weight:600;color:var(--mut)}
+.in{position:relative;margin-top:6px}
+.in .ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--acc);pointer-events:none}
+input[type=text],input[type=date],input[type=number],select{width:100%;padding:12px 12px 12px 38px;font:inherit;color:var(--ink);background:#f8fafc;border:1px solid var(--line);border-radius:12px;color-scheme:light;appearance:none;-webkit-appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235d6d80' stroke-width='3'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+option{background:#fff;color:#0f1f33}
+input:hover,select:hover{border-color:#c4d0dd}
+input:focus,select:focus{outline:none;border-color:var(--acc);background:#fff;box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 18%,transparent)}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.chip span{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);transition:.15s}
+.chip:hover span{border-color:var(--acc)}
+.chip input:checked+span{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600;box-shadow:0 8px 18px -10px var(--acc)}
+.chip input:focus-visible+span{outline:2px solid var(--ink);outline-offset:2px}
+.spares{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.sp{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:14px;background:#f8fafc}
+.sp .chip{flex:1}.sp .chip span{width:100%;border-radius:10px}
+.sp input[type=number]{width:74px;padding:8px;text-align:center}
+.sp input[type=number]:disabled{opacity:.4}
+.hide{display:none!important}
+.send{margin-top:26px;width:100%;display:flex;justify-content:center;align-items:center;gap:10px;padding:15px;border:0;border-radius:14px;background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 60%,#0284c7));color:#fff;font:inherit;font-weight:700;font-size:1.05rem;cursor:pointer;box-shadow:0 16px 30px -14px var(--acc);transition:transform .15s}
+.send:hover{transform:translateY(-2px)}
+.send:disabled{opacity:.6;cursor:wait;transform:none}
+.send:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,30px);opacity:0;pointer-events:none;max-width:92vw;padding:13px 18px;border-radius:14px;color:#fff;font-weight:600;display:flex;gap:10px;align-items:center;transition:.3s;z-index:9;box-shadow:0 16px 34px -12px rgba(0,0,0,.4)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.ok{background:#059669}.toast.err{background:#dc2626}
+footer{margin-top:40px;text-align:center;color:var(--mut);font-size:.8rem}
+@media (max-width:760px){.hero{grid-template-columns:1fr;margin-bottom:40px}.hero img{order:-1}.choose{grid-template-columns:1fr}.grid,.spares{grid-template-columns:1fr}form{padding:18px}.ph h2{font-size:1.15rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><div class="logo"><i data-i="box"></i></div><div class="brand">Kaset Care<small>Pelaporan PM & CM kaset</small></div></header>
+
+<section class="hero">
+  <div>
+    <h1>Laporan perawatan kaset, rapi dan cepat.</h1>
+    <p>Pilih jenis pekerjaan, isi form, dan data langsung tersimpan ke spreadsheet.</p>
+    <div class="stats"><span class="pill"><i data-i="shield"></i>PM terjadwal</span><span class="pill"><i data-i="wrench"></i>CM perbaikan</span><span class="pill"><i data-i="sheet"></i>Auto ke Spreadsheet</span></div>
+  </div>
+  <img src="image1.png" alt="Ilustrasi kaset ATM">
+</section>
+
+<section class="choose" aria-label="Pilih jenis laporan">
+  <button type="button" class="opt" data-k="PM"><img src="image2.png" alt=""><div class="t"><span class="ico"><i data-i="shield"></i></span><div><b>PM Kaset</b><span class="d">Preventive maintenance rutin</span></div><i class="go" data-i="arrow"></i></div></button>
+  <button type="button" class="opt" data-k="CM"><img src="image3.png" alt=""><div class="t"><span class="ico"><i data-i="wrench"></i></span><div><b>CM Kaset</b><span class="d">Corrective maintenance / perbaikan</span></div><i class="go" data-i="arrow"></i></div></button>
+</section>
+
+<section id="panel">
+  <div class="ph"><span class="ico" id="phIco"></span><h2 id="phTitle"></h2><button type="button" class="back" id="back"><i data-i="back"></i>Kembali</button></div>
+
+  <form id="fPM" data-jenis="PM" hidden>
+    <div class="sec"><i data-i="cal"></i>Jadwal</div>
+    <div class="grid">
+      <label class="f">Tanggal PM<div class="in"><i data-i="cal"></i><input type="date" name="tglPM" required></div></label>
+      <label class="f">PM ke<div class="in"><i data-i="repeat"></i><select name="pmKe" required><option value="">Pilih</option><option>1</option><option>2</option><option>3</option></select></div></label>
+    </div>
+    <div class="sec"><i data-i="box"></i>Kaset</div>
+    <div class="grid">
+      <label class="f">Merk kaset<div class="in"><i data-i="box"></i><select name="merk" class="merk" required></select></div></label>
+      <label class="f">Type<div class="in"><i data-i="cpu"></i><select name="tipe" class="tipe" required></select></div></label>
+    </div>
+    <div class="sec"><i data-i="user"></i>Petugas</div>
+    <div class="grid">
+      <label class="f full">Nama petugas<div class="in"><i data-i="user"></i><input type="text" name="nama" required autocomplete="name"></div></label>
+      <label class="f">NPP<div class="in"><i data-i="id"></i><input type="text" name="npp" required></div></label>
+      <label class="f">TWU / SLM<div class="in"><i data-i="users"></i><input type="text" name="twuSlm" required></div></label>
+      <label class="f">Region<div class="in"><i data-i="pin"></i><select name="region" class="region" required></select></div></label>
+      <label class="f">Divisi<div class="in"><i data-i="build"></i><select name="divisi" class="divisi" required></select></div></label>
+    </div>
+    <div class="sec"><i data-i="check"></i>Pelaksanaan PM</div>
+    <div class="chips">
+      <label class="chip"><input type="checkbox" name="pelaksanaan" value="Cek"><span><i data-i="search"></i>Cek</span></label>
+      <label class="chip"><input type="checkbox" name="pelaksanaan" value="Clean"><span><i data-i="spark"></i>Clean</span></label>
+      <label class="chip"><input type="checkbox" name="pelaksanaan" value="Clear"><span><i data-i="eraser"></i>Clear</span></label>
+    </div>
+    <div class="sec"><i data-i="repeat"></i>Pergantian part</div>
+    <div class="chips">
+      <label class="chip"><input type="radio" name="gantiPart" value="Tidak" checked><span>Tidak</span></label>
+      <label class="chip"><input type="radio" name="gantiPart" value="Ada"><span>Ada</span></label>
+    </div>
+    <div class="grid hide" id="partBox" style="margin-top:14px">
+      <label class="f">Nama part<div class="in"><i data-i="cog"></i><input type="text" name="namaPart"></div></label>
+      <label class="f">Jumlah part<div class="in"><i data-i="hash"></i><input type="number" name="jumlahPart" min="1"></div></label>
+    </div>
+    <div class="sec"><i data-i="clip"></i>Keterangan PM</div>
+    <div class="chips">
+      <label class="chip"><input type="radio" name="keterangan" value="Good" required><span><i data-i="check"></i>Good</span></label>
+      <label class="chip"><input type="radio" name="keterangan" value="Indikasi rusak / Need repair"><span><i data-i="alert"></i>Indikasi rusak / Need repair</span></label>
+    </div>
+    <button class="send" type="submit"><i data-i="send"></i><span>Kirim laporan PM</span></button>
+  </form>
+
+  <form id="fCM" data-jenis="CM" hidden>
+    <div class="sec"><i data-i="user"></i>Pegawai</div>
+    <div class="grid">
+      <label class="f full">Nama pegawai<div class="in"><i data-i="user"></i><input type="text" name="nama" required autocomplete="name"></div></label>
+      <label class="f">NPP<div class="in"><i data-i="id"></i><input type="text" name="npp" required></div></label>
+      <label class="f">Region<div class="in"><i data-i="pin"></i><select name="region" class="region" required></select></div></label>
+      <label class="f full">Divisi<div class="in"><i data-i="build"></i><select name="divisi" class="divisi" required></select></div></label>
+    </div>
+    <div class="sec"><i data-i="box"></i>Kaset</div>
+    <div class="grid">
+      <label class="f">Merk kaset<div class="in"><i data-i="box"></i><select name="merk" class="merk" required></select></div></label>
+      <label class="f">Type<div class="in"><i data-i="cpu"></i><select name="tipe" class="tipe" required></select></div></label>
+    </div>
+    <div class="sec"><i data-i="cal"></i>Perbaikan</div>
+    <div class="grid">
+      <label class="f">Tgl mulai perbaikan<div class="in"><i data-i="cal"></i><input type="date" name="tglMulai" required></div></label>
+      <label class="f">Tgl close<div class="in"><i data-i="cal"></i><input type="date" name="tglClose"></div></label>
+    </div>
+    <div class="sec"><i data-i="cog"></i>Sparepart digunakan <span style="color:var(--mut);font-weight:500">(centang, isi jumlah)</span></div>
+    <div class="spares" id="spares"></div>
+    <div class="sec"><i data-i="clip"></i>Hasil perbaikan</div>
+    <div class="chips">
+      <label class="chip"><input type="radio" name="hasil" value="Good" required><span><i data-i="check"></i>Good</span></label>
+      <label class="chip"><input type="radio" name="hasil" value="Un repair"><span><i data-i="alert"></i>Un repair</span></label>
+      <label class="chip"><input type="radio" name="hasil" value="Menunggu part"><span><i data-i="clock"></i>Menunggu part</span></label>
+    </div>
+    <button class="send" type="submit"><i data-i="send"></i><span>Kirim laporan CM</span></button>
+  </form>
+</section>
+<footer>Kaset Care · data dikirim ke Google Spreadsheet</footer>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ====== GANTI DENGAN URL /exec DARI GOOGLE APPS SCRIPT ====== */
+const EXEC_URL = 'https://script.google.com/macros/s/AKfycbwW1vEJ-DAF-ZX5IOUx1nr5Hk6YvP5KHCTd4Y4cLshzobTH2F1Xm5CuNYvxGpOoWnfd/exec';
+/* ============================================================ */
+
+const TYPES={'Hitachi':['SR 7500','VS 7500'],'OKI':['RG 7','RG 8'],'Hyosung':['MX5600'],'DN':['DN 200']};
+const SPARES=['Casing','Handle','Motor','Sensor','Belt','Gear','Mekanik part','Board'];
+const P={
+box:'<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>',
+shield:'<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+wrench:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/>',
+sheet:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/>',
+arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',back:'<path d="M19 12H5m6-6-6 6 6 6"/>',
+cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/>',
+repeat:'<path d="m17 2 4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/>',
+cpu:'<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/>',
+user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/>',
+users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-5 7-5s7 1.5 7 5M16 4.5a3.5 3.5 0 0 1 0 7M22 20c0-2.5-1.5-4-4-4.6"/>',
+id:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="12" r="2.5"/><path d="M14 10h4M14 14h4M5.5 17c.5-1.5 1.8-2 3.5-2s3 .5 3.5 2"/>',
+pin:'<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.500C5 14.800 12 21 12 21z"/><circle cx="12" cy="9.500" r="2.500"/>',
+build:'<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/>',
+check:'<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
+search:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.300-4.300"/>',
+spark:'<path d="M12 3l1.800 5.200L19 10l-5.200 1.800L12 17l-1.800-5.200L5 10l5.200-1.800zM19 17l.8 2.200L22 20l-2.200.8L19 23l-.8-2.200L16 20l2.200-.8z"/>',
+eraser:'<path d="m7 21-4-4a2 2 0 0 1 0-3l10-10a2 2 0 0 1 3 0l5 5a2 2 0 0 1 0 3L12 21z"/><path d="M22 21H7M9 9l7 7"/>',
+cog:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.900 4.900 7 7M17 17l2.100 2.100M4.900 19.100 7 17M17 7l2.100-2.100"/>',
+hash:'<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>',
+clip:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/>',
+alert:'<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17.500v.01"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+send:'<path d="m22 2-11 11M22 2l-7 20-4-9-9-4z"/>'};
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+function icons(root=document){$$('i[data-i]',root).forEach(el=>{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','ic');s.setAttribute('aria-hidden','true');s.innerHTML=P[el.dataset.i]||'';const c=el.getAttribute('class');if(c)s.classList.add(...c.split(' '));el.replaceWith(s)})}
+const opts=(a,ph)=>(ph?`<option value="">${ph}</option>`:'')+a.map(v=>`<option>${v}</option>`).join('');
+$$('.merk').forEach(s=>s.innerHTML=opts(Object.keys(TYPES),'Pilih merk'));
+$$('.tipe').forEach(s=>s.innerHTML=opts([],'Pilih merk dulu'));
+$$('.region').forEach(s=>s.innerHTML=opts([1,2,3,4,5,6,7,8,9,10],'Pilih'));
+$$('.divisi').forEach(s=>s.innerHTML=opts(['Opr1','Opr2'],'Pilih'));
+$$('.merk').forEach(m=>m.addEventListener('change',()=>{const t=$('.tipe',m.closest('form')),l=TYPES[m.value]||[];t.innerHTML=l.length===1?opts(l):opts(l,m.value?'Pilih type':'Pilih merk dulu')}));
+$('#spares').innerHTML=SPARES.map(p=>`<div class="sp"><label class="chip"><input type="checkbox" value="${p}"><span><i data-i="cog"></i>${p}</span></label><input type="number" min="1" value="1" disabled aria-label="Jumlah ${p}"></div>`).join('');
+$$('#spares input[type=checkbox]').forEach(c=>c.addEventListener('change',()=>$('input[type=number]',c.closest('.sp')).disabled=!c.checked));
+$$('input[name=gantiPart]').forEach(r=>r.addEventListener('change',()=>{const a=$('input[name=gantiPart]:checked').value==='Ada';$('#partBox').classList.toggle('hide',!a);$('[name=namaPart]').required=a;$('[name=jumlahPart]').required=a}));
+icons();
+
+const META={PM:{t:'Form PM Kaset',i:'shield'},CM:{t:'Form CM Kaset',i:'wrench'}};
+function openForm(k){
+  document.body.classList.toggle('cm',k==='CM');
+  $$('.opt').forEach(o=>o.classList.toggle('on',o.dataset.k===k));
+  $('#fPM').hidden=k!=='PM';$('#fCM').hidden=k!=='CM';
+  $('#phTitle').textContent=META[k].t;$('#phIco').innerHTML=`<i data-i="${META[k].i}"></i>`;icons($('#phIco'));
+  $('#panel').classList.add('show');$('#panel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+$$('.opt').forEach(b=>b.addEventListener('click',()=>openForm(b.dataset.k)));
+$('#back').addEventListener('click',()=>{$('#panel').classList.remove('show');$$('.opt').forEach(o=>o.classList.remove('on'));document.body.classList.remove('cm');scrollTo({top:0,behavior:'smooth'})});
+
+let tt;function toast(msg,ok){const t=$('#toast');t.className='toast show '+(ok?'ok':'err');t.textContent=msg;clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),4500)}
+
+$$('form').forEach(f=>f.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!EXEC_URL||EXEC_URL.startsWith('PASTE'))return toast('EXEC_URL belum diisi di index.html',false);
+  const fd=new FormData(f),d={jenis:f.dataset.jenis};
+  for(const[k,v]of fd.entries())if(k!=='pelaksanaan')d[k]=v;
+  if(d.jenis==='PM'){d.pelaksanaan=fd.getAll('pelaksanaan');if(!d.pelaksanaan.length)return toast('Pilih minimal satu pelaksanaan PM',false)}
+  else{d.sparepart=$$('#spares .sp').filter(p=>$('input[type=checkbox]',p).checked).map(p=>({nama:$('input[type=checkbox]',p).value,jumlah:$('input[type=number]',p).value}));
+    if(d.tglClose&&d.tglClose<d.tglMulai)return toast('Tgl close tidak boleh sebelum tgl mulai',false)}
+  const btn=$('.send',f),lbl=$('span',btn),old=lbl.textContent;btn.disabled=true;lbl.textContent='Mengirim...';
+  try{
+    /* text/plain + no-cors = tanpa preflight, aman dibuka dari file lokal */
+    await fetch(EXEC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(d)});
+    toast('Laporan '+d.jenis+' terkirim ke Spreadsheet',true);
+    f.reset();$('#partBox').classList.add('hide');$$('.tipe',f).forEach(t=>t.innerHTML=opts([],'Pilih merk dulu'));$$('#spares input[type=number]').forEach(n=>n.disabled=true);
+  }catch(err){toast('Gagal mengirim. Periksa internet / URL exec.',false)}
+  btn.disabled=false;lbl.textContent=old;
+}));
+</script>
+</body>
+</html>
