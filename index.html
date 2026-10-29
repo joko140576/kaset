@@ -128,6 +128,23 @@ input:focus,select:focus{outline:none;border-color:var(--acc);background:#fff;bo
 .legend i{width:12px;height:12px;border-radius:4px;flex:none}
 .legend b{margin-left:6px}
 .empty{color:var(--mut);text-align:center;padding:30px 10px;font-size:.9rem}
+#viewDash{--acc:var(--cm)}
+/* tabel data */
+.tcard{margin-top:18px}
+.tools{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.tools .in{flex:1;margin-top:0}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+table.dt{width:100%;border-collapse:collapse;font-size:.88rem;min-width:760px}
+.dt th{position:sticky;top:0;text-align:left;background:#fff7ed;color:#9a3412;font-weight:700;padding:11px 14px;white-space:nowrap;border-bottom:1px solid var(--line)}
+.dt td{padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.dt tbody tr:last-child td{border-bottom:0}
+.dt tbody tr:hover{background:#fffaf5}
+.dt .c{text-align:center}
+.bdg{display:inline-block;padding:3px 11px;border-radius:999px;font-size:.78rem;font-weight:700}
+.bdg.g{background:#d1fae5;color:#047857}.bdg.r{background:#fee2e2;color:#b91c1c}.bdg.w{background:#fef3c7;color:#b45309}.bdg.x{background:#e2e8f0;color:#475569}
+.more{display:block;margin:14px auto 0;background:#fff;border:1px solid var(--line);color:var(--ink);padding:9px 20px;border-radius:999px;font:inherit;font-size:.9rem;font-weight:600;cursor:pointer}
+.more[hidden]{display:none}
+.more:hover{border-color:var(--cm);color:var(--cm)}
 .state{background:#fff;border:1px dashed var(--line);border-radius:var(--r);padding:36px 20px;text-align:center;color:var(--mut)}
 .state.err{border-color:#fca5a5;color:#b91c1c}
 
@@ -398,12 +415,36 @@ function renderDash(rows){
     <div class="card"><h3><i data-i="pin"></i>CM per Region</h3>${vbars(regions)}</div>
     <div class="card"><h3><i data-i="build"></i>CM per Divisi</h3>${donut(divisi,total)}</div>
     <div class="card wide"><h3><i data-i="users"></i>CM per TWU / SLM<em>${twuAll.length>10?'Top 10 dari '+twuAll.length:twuAll.length+' TWU / SLM'}</em></h3>${hbars(twu)}</div>
+  </div>
+  <div class="card tcard"><h3><i data-i="sheet"></i>Data CM Kaset<em id="tblCount"></em></h3>
+    <div class="tools"><div class="in"><i data-i="search"></i><input type="text" id="tblQ" placeholder="Cari region, divisi, TWU, merk, hasil..." aria-label="Cari data CM"></div></div>
+    <div class="tw"><table class="dt"><thead><tr><th class="c">No</th><th>Tgl Mulai</th><th>Tgl Close</th><th class="c">Region</th><th>Divisi</th><th>TWU / SLM</th><th>Merk</th><th>Type</th><th>Hasil</th></tr></thead><tbody id="tblBody"></tbody></table></div>
+    <button type="button" class="more" id="tblMore">Tampilkan lebih banyak</button>
   </div>`;
   icons($('#dashBody'));
+  initTable(rows);
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     $$('#dashBody [data-h]').forEach(e=>e.style.height=e.dataset.h+'%');
     $$('#dashBody [data-w]').forEach(e=>e.style.width=e.dataset.w+'%');
   }));
+}
+
+const TBL={rows:[],q:'',n:10};
+function badge(h){const k=(h||'').toLowerCase();const c=k==='good'?'g':k==='un repair'?'r':k==='menunggu part'?'w':'x';return `<span class="bdg ${c}">${esc(h||'-')}</span>`}
+const dash=v=>v&&v!=='-'?esc(v):'<span style="color:var(--mut)">-</span>';
+function drawTable(){
+  const q=TBL.q.trim().toLowerCase();
+  const f=q?TBL.rows.filter(r=>[r.region,r.divisi,r.twu,r.merk,r.tipe,r.hasil,r.tglMulai,r.tglClose].join(' ').toLowerCase().includes(q)):TBL.rows;
+  const show=f.slice(0,TBL.n);
+  $('#tblBody').innerHTML=show.length?show.map((r,i)=>`<tr><td class="c">${i+1}</td><td>${dash(r.tglMulai)}</td><td>${dash(r.tglClose)}</td><td class="c">${esc(r.region||'-')}</td><td>${esc(r.divisi||'-')}</td><td>${dash(r.twu)}</td><td>${esc(r.merk||'-')}</td><td>${esc(r.tipe||'-')}</td><td>${badge(r.hasil)}</td></tr>`).join(''):'<tr><td colspan="9" class="empty">Data tidak ditemukan</td></tr>';
+  $('#tblCount').textContent=`Menampilkan ${show.length} dari ${f.length}`;
+  $('#tblMore').hidden=f.length<=TBL.n;
+}
+function initTable(rows){
+  TBL.rows=rows.slice().reverse();TBL.q='';TBL.n=10; /* terbaru di atas */
+  $('#tblQ').addEventListener('input',e=>{TBL.q=e.target.value;TBL.n=10;drawTable()});
+  $('#tblMore').addEventListener('click',()=>{TBL.n+=10;drawTable()});
+  drawTable();
 }
 
 async function loadDash(){
