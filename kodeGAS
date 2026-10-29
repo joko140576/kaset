@@ -1,0 +1,121 @@
+/**
+ * PM & CM Kaset - Google Apps Script (API untuk web lokal)
+ *
+ * LANGKAH:
+ * 1. Tempel kode ini di script.google.com (ganti kode lama).
+ * 2. Di spreadsheet DB CM Kaset, tambahkan header  "TWU/SLM"  di kolom L1
+ *    (kolom setelah "Hasil Perbaikan"). Data lama dibiarkan kosong.
+ * 3. Deploy > Manage deployments > Edit > Version: New version > Deploy
+ *    (URL /exec tetap sama).
+ */
+
+const ID_PM = '1LC0vK6SnCFwRnVwLwDrSC8xVN2quqMKI2vmwMoj8X_g';
+const ID_CM = '1PNDg-9gnVtXP9h0JajZjbFdh6VTi342pHTuriOG54iE';
+
+const CFG = {
+  PM: {
+    prop: 'SS_PM', fixedId: () => ID_PM, title: 'DB PM Kaset', sheet: 'PM Kaset',
+    headers: ['Timestamp', 'Tanggal PM', 'PM Ke', 'Merk', 'Type', 'Nama Petugas', 'NPP',
+              'TWU/SLM', 'Region', 'Divisi', 'Pelaksanaan PM', 'Ganti Part', 'Nama Part',
+              'Jumlah Part', 'Keterangan PM']
+  },
+  CM: {
+    prop: 'SS_CM', fixedId: () => ID_CM, title: 'DB CM Kaset', sheet: 'CM Kaset',
+    // TWU/SLM ditaruh di kolom terakhir (L) agar data lama tidak bergeser
+    headers: ['Timestamp', 'Nama Pegawai', 'NPP', 'Region', 'Divisi', 'Merk', 'Type',
+              'Tgl Mulai Perbaikan', 'Tgl Close', 'Sparepart Digunakan', 'Hasil Perbaikan',
+              'TWU/SLM']
+  }
+};
+
+function setup() {
+  ['PM', 'CM'].forEach(k => Logger.log(k + ' -> ' + getSS_(CFG[k]).getUrl()));
+}
+
+function getSS_(c) {
+  const props = PropertiesService.getScriptProperties();
+  const id = c.fixedId() || props.getProperty(c.prop);
+  if (id) return SpreadsheetApp.openById(id);
+  const ss = SpreadsheetApp.create(c.title);
+  props.setProperty(c.prop, ss.getId());
+  const sh = ss.getSheets()[0].setName(c.sheet);
+  sh.appendRow(c.headers);
+  sh.getRange(1, 1, 1, c.headers.length).setFontWeight('bold').setBackground('#d9ead3');
+  sh.setFrozenRows(1);
+  return ss;
+}
+
+function getSheet_(c) {
+  const ss = getSS_(c);
+  let sh = ss.getSheetByName(c.sheet);
+  if (!sh) {
+    sh = ss.insertSheet(c.sheet);
+    sh.appendRow(c.headers);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
+function json_(o) {
+  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function str_(v) {
+  if (v instanceof Date) return Utilities.formatDate(v, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  return v === null || v === undefined ? '' : String(v);
+}
+
+/**
+ * GET /exec            -> tes cepat {"ok":true}
+ * GET /exec?action=cm  -> data CM untuk dashboard (tanpa nama/NPP)
+ */
+function doGet(e) {
+  const action = e && e.parameter && e.parameter.action;
+  if (action === 'cm') {
+    try {
+      const v = getSheet_(CFG.CM).getDataRange().getValues();
+      const data = v.slice(1)
+        .filter(r => r[3] !== '' || r[4] !== '')
+        .map(r => ({
+          region: str_(r[3]),
+          divisi: str_(r[4]),
+          merk: str_(r[5]),
+          tipe: str_(r[6]),
+          tglMulai: str_(r[7]),
+          tglClose: str_(r[8]),
+          hasil: str_(r[10]),
+          twu: str_(r[11])
+        }));
+      return json_({ ok: true, data: data });
+    } catch (err) {
+      return json_({ ok: false, error: String(err) });
+    }
+  }
+  return json_({ ok: true, service: 'PM & CM Kaset API' });
+}
+
+function doPost(e) {
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(20000);
+    const d = JSON.parse(e.postData.contents);
+    const now = new Date();
+    if (d.jenis === 'PM') {
+      const ada = d.gantiPart === 'Ada';
+      getSheet_(CFG.PM).appendRow([now, d.tglPM, d.pmKe, d.merk, d.tipe, d.nama, d.npp,
+        d.twuSlm, d.region, d.divisi, (d.pelaksanaan || []).join(', '), d.gantiPart,
+        ada ? d.namaPart : '-', ada ? d.jumlahPart : '-', d.keterangan]);
+    } else if (d.jenis === 'CM') {
+      const parts = (d.sparepart || []).map(p => p.nama + ' (' + p.jumlah + ')').join(', ');
+      getSheet_(CFG.CM).appendRow([now, d.nama, d.npp, d.region, d.divisi, d.merk, d.tipe,
+        d.tglMulai, d.tglClose || '-', parts || '-', d.hasil, d.twuSlm]);
+    } else {
+      return json_({ ok: false, error: 'Jenis tidak dikenal' });
+    }
+    return json_({ ok: true });
+  } catch (err) {
+    return json_({ ok: false, error: String(err) });
+  } finally {
+    try { lock.releaseLock(); } catch (x) {}
+  }
+}
