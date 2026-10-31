@@ -204,12 +204,15 @@ footer{margin-top:40px;text-align:center;color:var(--mut);font-size:.8rem}
     <div class="grid">
       <label class="f">Merk kaset<div class="in"><i data-i="box"></i><select name="merk" class="merk" required></select></div></label>
       <label class="f">Type<div class="in"><i data-i="cpu"></i><select name="tipe" class="tipe" required></select></div></label>
+      <label class="f">Kaset dari COU<div class="in"><i data-i="build"></i><input type="text" name="kasetCou" required autocomplete="off"></div></label>
+      <label class="f">Kaset dari bank<div class="in"><i data-i="box"></i><select name="kasetBank" class="bank" required></select></div></label>
+      <label class="f full">SN kaset<div class="in"><i data-i="hash"></i><input type="text" name="snKaset" required autocomplete="off"></div></label>
     </div>
     <div class="sec"><i data-i="user"></i>Petugas</div>
     <div class="grid">
       <label class="f full">Nama petugas<div class="in"><i data-i="user"></i><input type="text" name="nama" required autocomplete="name"></div></label>
       <label class="f">NPP<div class="in"><i data-i="id"></i><input type="text" name="npp" required></div></label>
-      <label class="f">TWU / SLM<div class="in"><i data-i="users"></i><input type="text" name="twuSlm" required></div></label>
+      <label class="f">TWU / SLM<div class="in"><i data-i="users"></i><select name="twuSlm" class="twu" required></select></div></label>
       <label class="f">Region<div class="in"><i data-i="pin"></i><select name="region" class="region" required></select></div></label>
       <label class="f">Divisi<div class="in"><i data-i="build"></i><select name="divisi" class="divisi" required></select></div></label>
     </div>
@@ -241,7 +244,7 @@ footer{margin-top:40px;text-align:center;color:var(--mut);font-size:.8rem}
     <div class="grid">
       <label class="f full">Nama pegawai<div class="in"><i data-i="user"></i><input type="text" name="nama" required autocomplete="name"></div></label>
       <label class="f">NPP<div class="in"><i data-i="id"></i><input type="text" name="npp" required></div></label>
-      <label class="f">TWU / SLM<div class="in"><i data-i="users"></i><input type="text" name="twuSlm" required></div></label>
+      <label class="f">TWU / SLM<div class="in"><i data-i="users"></i><select name="twuSlm" class="twu" required></select></div></label>
       <label class="f">Region<div class="in"><i data-i="pin"></i><select name="region" class="region" required></select></div></label>
       <label class="f">Divisi<div class="in"><i data-i="build"></i><select name="divisi" class="divisi" required></select></div></label>
     </div>
@@ -249,6 +252,9 @@ footer{margin-top:40px;text-align:center;color:var(--mut);font-size:.8rem}
     <div class="grid">
       <label class="f">Merk kaset<div class="in"><i data-i="box"></i><select name="merk" class="merk" required></select></div></label>
       <label class="f">Type<div class="in"><i data-i="cpu"></i><select name="tipe" class="tipe" required></select></div></label>
+      <label class="f">Kaset dari COU<div class="in"><i data-i="build"></i><input type="text" name="kasetCou" required autocomplete="off"></div></label>
+      <label class="f">Kaset dari bank<div class="in"><i data-i="box"></i><select name="kasetBank" class="bank" required></select></div></label>
+      <label class="f full">SN kaset<div class="in"><i data-i="hash"></i><input type="text" name="snKaset" required autocomplete="off"></div></label>
     </div>
     <div class="sec"><i data-i="cal"></i>Perbaikan</div>
     <div class="grid">
@@ -288,6 +294,8 @@ const EXEC_URL = 'https://script.google.com/macros/s/AKfycbwgBk2gDDrvgSnXg3z8wJ3
 /* ============================================================ */
 
 const TYPES={'Hitachi':['SR 7500','VS 7500'],'OKI':['RG 7','RG 8'],'Hyosung':['MX5600'],'DN':['DN 200']};
+/* TWU per Region */
+const TWU={'1':['Medan'],'2':['Bandar Lampung','Batam','Padang','Palembang','Pekanbaru'],'3':['Bekasi','Jakarta Fatmawati','Jakarta Harmoni','Tangerang'],'4':['Bandung'],'5':['Semarang','Yogyakarta'],'6':['Malang','Surabaya'],'8':['Denpasar'],'9':['Banjarmasin','Balikpapan','Makassar','Pontianak','Samarinda'],'10':['Jayapura','Manado','Palu']};
 const SPARES=['Casing','Handle','Motor','Sensor','Belt','Gear','Mekanik part','Board'];
 const P={
 box:'<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>',
@@ -322,6 +330,9 @@ $$('.merk').forEach(s=>s.innerHTML=opts(Object.keys(TYPES),'Pilih merk'));
 $$('.tipe').forEach(s=>s.innerHTML=opts([],'Pilih merk dulu'));
 $$('.region').forEach(s=>s.innerHTML=opts([1,2,3,4,5,6,7,8,9,10],'Pilih'));
 $$('.divisi').forEach(s=>s.innerHTML=opts(['Opr1','Opr2'],'Pilih'));
+$$('.bank').forEach(s=>s.innerHTML=opts(['BNI','BRI','BCA','Mandiri'],'Pilih bank'));
+$$('.twu').forEach(s=>s.innerHTML=opts([],'Pilih region dulu'));
+$$('.region').forEach(r=>r.addEventListener('change',()=>{const t=$('.twu',r.closest('form')),l=TWU[r.value]||[];t.innerHTML=l.length===1?opts(l):opts(l,r.value?'Pilih TWU / SLM':'Pilih region dulu')}));
 $$('.merk').forEach(m=>m.addEventListener('change',()=>{const t=$('.tipe',m.closest('form')),l=TYPES[m.value]||[];t.innerHTML=l.length===1?opts(l):opts(l,m.value?'Pilih type':'Pilih merk dulu')}));
 $('#spares').innerHTML=SPARES.map(p=>`<div class="sp"><label class="chip"><input type="checkbox" value="${p}"><span><i data-i="cog"></i>${p}</span></label><input type="number" min="1" value="1" disabled aria-label="Jumlah ${p}"></div>`).join('');
 $$('#spares input[type=checkbox]').forEach(c=>c.addEventListener('change',()=>$('input[type=number]',c.closest('.sp')).disabled=!c.checked));
@@ -368,7 +379,7 @@ $$('form').forEach(f=>f.addEventListener('submit',async e=>{
     await fetch(EXEC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(d)});
     toast('Laporan '+d.jenis+' terkirim ke Spreadsheet',true);
     if(d.jenis==='CM')dashLoaded=false; /* data dashboard perlu dimuat ulang */
-    f.reset();$('#partBox').classList.add('hide');$$('.tipe',f).forEach(t=>t.innerHTML=opts([],'Pilih merk dulu'));$$('#spares input[type=number]').forEach(n=>n.disabled=true);
+    f.reset();$('#partBox').classList.add('hide');$$('.tipe',f).forEach(t=>t.innerHTML=opts([],'Pilih merk dulu'));$$('.twu',f).forEach(t=>t.innerHTML=opts([],'Pilih region dulu'));$$('#spares input[type=number]').forEach(n=>n.disabled=true);
   }catch(err){toast('Gagal mengirim. Periksa internet / URL exec.',false)}
   btn.disabled=false;lbl.textContent=old;
 }));
