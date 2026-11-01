@@ -3,8 +3,10 @@
  *
  * LANGKAH:
  * 1. Tempel kode ini di script.google.com (ganti kode lama).
- * 2. Di spreadsheet DB CM Kaset, tambahkan header  "TWU/SLM"  di kolom L1
- *    (kolom setelah "Hasil Perbaikan"). Data lama dibiarkan kosong.
+ * 2. Di spreadsheet DB CM Kaset (sheet "CM Kaset"):
+ *    - kolom L1 = "TWU/SLM"        (sudah ada)
+ *    - kolom M1 = "Kaset dari COU" (BARU, tambahkan manual)
+ *    Data lama dibiarkan kosong.
  * 3. Deploy > Manage deployments > Edit > Version: New version > Deploy
  *    (URL /exec tetap sama).
  */
@@ -21,10 +23,10 @@ const CFG = {
   },
   CM: {
     prop: 'SS_CM', fixedId: () => ID_CM, title: 'DB CM Kaset', sheet: 'CM Kaset',
-    // TWU/SLM ditaruh di kolom terakhir (L) agar data lama tidak bergeser
+    // TWU/SLM (L) dan Kaset dari COU (M) di kolom terakhir agar data lama tidak bergeser
     headers: ['Timestamp', 'Nama Pegawai', 'NPP', 'Region', 'Divisi', 'Merk', 'Type',
               'Tgl Mulai Perbaikan', 'Tgl Close', 'Sparepart Digunakan', 'Hasil Perbaikan',
-              'TWU/SLM']
+              'TWU/SLM', 'Kaset dari COU']
   }
 };
 
@@ -67,7 +69,7 @@ function str_(v) {
 
 /**
  * GET /exec            -> tes cepat {"ok":true}
- * GET /exec?action=cm  -> data CM untuk dashboard (tanpa nama/NPP)
+ * GET /exec?action=cm  -> data CM untuk dashboard (termasuk nama, NPP, COU)
  */
 function doGet(e) {
   const action = e && e.parameter && e.parameter.action;
@@ -77,6 +79,8 @@ function doGet(e) {
       const data = v.slice(1)
         .filter(r => r[3] !== '' || r[4] !== '')
         .map(r => ({
+          nama: str_(r[1]),
+          npp: str_(r[2]),
           region: str_(r[3]),
           divisi: str_(r[4]),
           merk: str_(r[5]),
@@ -84,7 +88,8 @@ function doGet(e) {
           tglMulai: str_(r[7]),
           tglClose: str_(r[8]),
           hasil: str_(r[10]),
-          twu: str_(r[11])
+          twu: str_(r[11]),
+          cou: str_(r[12])
         }));
       return json_({ ok: true, data: data });
     } catch (err) {
@@ -108,7 +113,7 @@ function doPost(e) {
     } else if (d.jenis === 'CM') {
       const parts = (d.sparepart || []).map(p => p.nama + ' (' + p.jumlah + ')').join(', ');
       getSheet_(CFG.CM).appendRow([now, d.nama, d.npp, d.region, d.divisi, d.merk, d.tipe,
-        d.tglMulai, d.tglClose || '-', parts || '-', d.hasil, d.twuSlm]);
+        d.tglMulai, d.tglClose || '-', parts || '-', d.hasil, d.twuSlm, d.kasetCou || '-']);
     } else {
       return json_({ ok: false, error: 'Jenis tidak dikenal' });
     }
